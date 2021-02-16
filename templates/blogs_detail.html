@@ -1,0 +1,196 @@
+{% extends 'blogs_list.html' %}
+{% load static %}
+{% load comments_tags %}
+{% load likes_tags %}
+<script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+<ul class="bloglist">
+            {% block script_extends %}<!--异步提交逻辑-->
+{#                <script type="text/javascript">#}
+{#                    $("#comment_form").submit(function () {#}
+{#                        CKEDITOR.instances['id_text'].updateElement();#}
+{#                       $.ajax({#}
+{#                           url:"{% url 'update_comment' %}",//异步提交#}
+{#                           type:'POST',#}
+{#                           data:$(this).serialize(),#}
+{#                           cache:false,//关闭缓存#}
+{#                           success:function (data) {#}
+{#                               console.log(data);#}
+{#                               //异步提交成功后插入数据#}
+{#                               if (data['status']==="SUCCESS"){#}
+{#                                    var comment_html = '<div>'+data['username']+'('+data['comment_time']+'):'+data['text']+'<div/>';#}
+{#                                    $("#comment_list").prepend(comment_html);#}
+{#                               //清空编辑框的内容#}
+{#                                    CKEDITOR.instances['id_text'].setData('');#}
+{#                               }else{#}
+{#                                   //显示错误信息#}
+{#                                    $("#comment_error").text(data['message']);#}
+{#                               }#}
+{#                           },#}
+{#                           error:function (xhr) {#}
+{#                               console.log(xhr);#}
+{#                           }#}
+{#                       });#}
+{#                        return false;#}
+{#                   });//选择id为comment_form的对象#}
+{#                </script>#}
+                <script type="text/javascript">
+                function reply(reply_comment_id) {
+                    $('#reply_comment_id').val(reply_comment_id);//设置值
+                    var html = $("#comment_"+reply_comment_id).html();
+                    $('#reply_content').html(html);
+                    $('#reply_content_container').show();
+                    $('html').animate({scrollTop:$('#comment_form').offset().top-60},300,function f() {
+                        CKEDITOR.instances['id_text'].focus();
+                    });//回复框的重定位，定位至评论区
+                }
+                function likeChange(obj,content_type,object_id) {
+                    var is_like = obj.getElementsByClassName('active').lenth === 0;
+                    $.ajax({
+                        url:"{% url 'like_change' %}",
+                        type:'GET',
+                        data:{
+                            content_type: content_type,
+                            object_id: object_id,
+                            is_like: is_like,
+                        },
+                        cache:false,
+                        success:function (data) {
+                            console.log(data);
+                            if(data['status']==='SUCCESS'){
+                                var liked_num = $(obj.getElementsByClassName('liked_num'));
+                                liked_num.text(data['liked_num']);
+                                window.location.reload();//本地刷新页面
+                                //$("#id_like").load(location.href+"#id_like");
+                            }
+                            else {
+                                if (data['code']===400){//处理未登录
+                                    alert("未登录，请先登录");
+                                }else {
+                                    alert(data['message']);
+                                }
+                            }
+                        },
+                        error:function (xhr) {
+                            console.log(xhr);
+                        }
+                    });
+                }
+                </script>
+{#                <script>#}
+{#                    $('#submit').click(function () {#}
+{#                        var test = $('#test');#}
+{#                        $.ajax({#}
+{#                            type:"POST",#}
+{#                            url:"{% url 'test' %}",#}
+{#                            data:{#}
+{#                                'test':test,#}
+{#                            },#}
+{#                            success: function(returnData) {},#}
+{#                        });#}
+{#                        return false;#}
+{#                    })#}
+{#                </script>#}
+            {% endblock %}
+            {% block contend %}
+            <li>
+{#                    <form id="testform" >#}
+{#                        {% csrf_token %}#}
+{#                        测试的内容<input id="test" type="text" name="test">#}
+{#                        <input id="submit" type="submit" value="submit">#}
+{#                    </form>#}
+                    <div class="row_box">
+                        <div class="ti"></div><!--三角形-->
+                        <div class="ci"></div><!--圆形-->
+                        <h2 class="title"> <a href="{% url 'blog:blog_list' %}">{{ blogs.title }}</a></h2>
+                        <ul class="textinfo">
+{#                            <a href="#"><img src="{% static 'images/s1.jpg'%}"></a>#}
+                            <p>{{ blogs.content|safe }}</p><!--safe的用法是在后台admin可以直接贴html标签进行转换-->
+                        </ul>
+                        <ul class="details">
+
+
+
+                            <li class="comments">{% get_comment_count blogs %}</li>
+                            <li class="icon_time">{{ blogs.created_time }}</li>
+                            <li><a href="{% url 'blog:blog_with_type' blogs.blog_type_id%}">{{ blogs.blog_type }}</a></li>
+
+                            <li id="id_like" class="likes" onclick="likeChange(this,'blog',{{ blogs.pk }})">
+                                <span class="liked-num">{% get_like_count blogs %}</span>
+                                <span class="glyphicon glyphicon-thumbs-up ">{% get_like_status blogs %}</span>
+                            </li>
+                            {% if previous_blog %}
+                                <li>上一篇:<a href="{% url 'blog:blog_detail' previous_blog.id %}">{{ previous_blog.title }}</a></li>
+                            {% endif %}
+                            {% if next_blog %}
+                                <li>下一篇:<a href="{% url 'blog:blog_detail' next_blog.id %}">{{ next_blog.title }}</a></li>
+                            {% endif %}
+                            <li>被看:({{ blogs.get_read_num }})</li>
+                        </ul>
+                    </div>
+
+                    <div class="row_box" style="margin-top: 20px"><!--评论区域-->
+                        <h2 class="title" style="text-align: center">评论区</h2>
+                    </div>
+
+                    <div class="row_box">
+                        <div class="ci"></div><!--圆形-->
+                        <h2 class="title">
+                            {% if user.is_authenticated %}
+                                    {{ user.get_nickname }},欢迎评论
+                                    <form id="comment_form" action="{% url 'update_comment' %}" method="post">
+{#                                        <div id="reply_content_container" style="display: none;">#}
+{#                                            <p>回复:</p>#}
+{#                                            <div id="reply_content"></div>#}
+{#                                        </div>#}
+                                        {% csrf_token %}
+
+                                        {{ comment_form.media }}
+                                        {{ comment_form.as_p }}
+{#                                        {% get_comment_form blogs as comment_form %}#}
+{#                                        {% for field in comment_form %}#}
+{#                                            {{ field }}#}
+{#                                        {% endfor %}#}
+                                        <hr style="width:593px">
+                                        <span id="comment_error" class="text-danger"></span>
+                                        <input id="submit" type="submit" value="提交评论" style="text-decoration:none;
+	                                        background:#629fe8;
+	                                        color:#f2f2f2;
+                                            padding: 5px 15px 5px 15px;
+                                            font-size:8px;
+                                            font-family: 微软雅黑,宋体,Arial,Helvetica,Verdana,sans-serif;
+                                            font-weight:bold;
+                                            border-radius:3px;">
+                                    </form>
+                                {% else %}
+
+                                    <ul>
+                                        <li>未登录,<a href="{% url 'blog:load_login' %}?from={{ request.get_full_path }}" style="color: #E72B2B">登录<a/>后才能评论和点赞哦<li/>
+                                    </ul>
+
+                                {% endif %}
+                        </h2>
+                    </div>
+
+                <div class="row_box"><!--评论区域-->
+                        <div class="ci"></div><!--圆形-->
+                        <h2 class="title">
+                        <div id="comment_list">
+                        {% get_comment_list blogs as comments %}
+                            {% for comment in comments %}
+                                <div class="comment">
+                                    {{ comment.user.get_nickname }}({{ comment.user.username }})
+                                    ({{ comment.comment_time}})
+                                    评论:{{ comment.text | safe }}
+                                </div>
+                            {% empty %}
+                                暂无评论
+                            {% endfor %}
+                        </div>
+                        </h2>
+                </div>
+            </li>
+     {% endblock %}
+</ul>

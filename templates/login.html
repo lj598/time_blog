@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>博客登录页</title>
+</head>
+<body style="text-align: center">
+      <div>
+          <h3>登录</h3>
+      </div>
+      <div>
+           <form action="{% url 'login' %}" method="post">
+               <div >
+                {% csrf_token %}<!--csrf令牌-->
+                <div>用户名:<input type="text" name="username"><div/>
+                <div>密  码:<input type="password" name="password"><div/>
+                <div><input type="submit" value="登录"><a href="{% url 'blog:load_registic' %}"><input type="button" value="注册"></a></div>
+               </div>
+           </form>
+      </div>
+</body>
+</html>

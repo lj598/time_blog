@@ -1,0 +1,39 @@
+{% extends 'blogs_list.html' %}
+{% load static %}
+
+{% block contend %}
+    <ul class="bloglist">
+                <li>
+                    <div class="row_box">
+                        <div class="ti"></div><!--三角形-->
+                        <div class="ci"></div><!--圆形-->
+                        <h2 class="title">照片标题1</h2>
+                        <ul class="textinfo">
+                            <a href="#"><img src="{% static 'images/01.jpg'%}"></a>
+                        </ul>
+                        <ul class="details">
+                            <li class="likes"><a href="#">10</a></li>
+                            <li class="comments"><a href="#">34</a> </li>
+                            <li class="icon_time">1212</li>
+                        </ul>
+                    </div>
+                </li>
+
+        </ul>
+{% endblock %}
+{#{% block contend %}#}
+{#    <section class="flickr">#}
+{#        	<h2>摄影作品</h2>#}
+{#            <ul>#}
+{#            	<li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#                <li><a href="#"><img src="{% static 'images/01.jpg'%}"></a></li>#}
+{#            </ul>#}
+{#        </section>#}
+{#{% endblock %}#}

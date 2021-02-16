@@ -1,0 +1,106 @@
+{% extends 'index.html' %}
+{% block card %}
+    <div class="user_card">
+        <div id="div1"></div>
+        <h1>个人信息</h1>
+        <p>昵称：{{ user.get_nickname }}&nbsp;&nbsp;&nbsp;<input type="button" onClick="msgbox(1)" value="点击修改昵称" style="float: right;margin-right: 30px">&nbsp;&nbsp;&nbsp;{{ error }}</p>
+        <p>账号：{{ user }}</p>
+        <p>上次登陆时间：{{ user.last_login }}</p>
+        <p>Email：{{ user.email }}&nbsp;&nbsp;<input type="button" onClick="emailbox(1)" value="修改绑定邮箱" style="float: right;margin-right: 30px"></p>
+        {% if user.is_staff or user.is_superuser %}
+            <p>站点管理：<a href="{% url 'admin:index' %}">点击进入网站后台</a></p>
+        {% else %}
+            <p>密码：********<input type="button" onClick="passwordbox(1)" value="点击修改密码" style="float: right;margin-right: 30px">&nbsp;&nbsp;&nbsp;{{ pass_error }}</p>
+        {% endif %}
+    </div>
+
+    <style>
+    .box{
+        float: left;
+        width:15%; margin-top:20%; margin:auto; padding:28px;
+        height:150px; border:1px #111 solid;
+        display:none;
+        position: absolute;
+        z-index: 99;
+        background-color: #fefefe;
+    }
+    .box.show{display: block;}
+    .box .x{font-size:18px; text-align:right; display:block;}
+    .box input{width:90%; font-size:18px; margin-top:18px;}
+
+    .emailbox{
+        float: left;
+        width:25%; margin-top:20%; margin:auto; padding:28px;
+        height:140px; border:1px #111 solid;
+        display:none;
+        position: absolute;
+        z-index: 99;
+        background-color: #fefefe;
+    }
+    .emailbox.show{display: block;}
+    .emailbox .x{font-size:18px; text-align:right; display:block;}
+    .emailbox .text{width:90%; font-size:18px; margin-top:18px;}
+    .emailbox .button{width:40%; font-size:18px; margin-top:18px;}
+    </style>
+    <script>
+        function msgbox(n){
+            document.getElementById('inputbox').style.display=n?'block':'none';
+        }
+        function passwordbox(n) {
+            document.getElementById('passwordbox').style.display=n?'block':'none';
+        }
+        function emailbox(n) {
+            document.getElementById('emailbox').style.display=n?'block':'none';
+        }
+        function check() {
+            var email = $("#id_email").val();
+            var verification = $("#id_verification").val();
+            if (email === ""){
+                alert("邮箱不能为空");
+            }
+            $.ajax({
+                url:"{% url 'send_verification' %}",
+                type:"POST",
+                data:{
+                    'email':email
+                },
+                cache:false,
+                success: function (data) {
+                    if (data['status']==='ERROR' || data['status']==='SUCCESS'){
+                        alert(data['status']);
+                    }
+                }
+            });
+            //alert(email);
+        }
+        var sleep = function (time) {
+            var startTime = new Date().getTime()+parseInt(time,10);
+            while (new Date().getTime()<startTime){}
+        };
+        function reload() {
+                window.location.reload();//本地刷新页面
+        }
+    </script>
+    <form id='inputbox' class="box" action="{% url 'change_nickname' %}" method="post">
+        <a class='x' href=''; onclick="msgbox(0); return false;">X</a>
+        <input type="text" name="nickname" placeholder="输入新昵称">
+        <input type="submit" value="提交" style="float: left">
+    </form>
+
+    <form id='passwordbox' class="box" action="{% url 'change_password' %}" method="post">
+        <a class='x' href=''; onclick="passwordbox(0); return false;">X</a>
+        <input type="text" name="pe_password" placeholder="输入旧密码">
+        <input type="text" name="new_password" placeholder="输入新密码">
+        <input type="submit" value="提交" style="float: left">
+    </form>
+
+    <form id='emailbox' class="emailbox" action="{% url 'change_email' %}" method="post">
+        <a class='x' href=''; onclick="emailbox(0); return false;">X</a>
+        <input id="id_email" class="text" type="text" name="email" placeholder="输入邮箱">
+        <input id="id_verification" class="text" type="text" name="verification" placeholder="点击发送验证码,邮箱查收">
+
+        <input onclick="check()" class="button" type="button" value="发送验证码" style="float: left">
+        <input class="button" type="submit" value="提交" style="float: right">
+    </form>
+{% endblock %}
+

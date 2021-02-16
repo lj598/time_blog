@@ -1,0 +1,31 @@
+{% extends 'index.html' %}
+{% load static %}
+
+<ul class="bloglist">
+            {% block contend %}
+                <li>
+
+                    <div class="row_box">
+                        <div class="ti"></div><!--三角形-->
+                        <div class="ci"></div><!--圆形-->
+                        <h2 class="title"> <a href="">留言板</a> </h2>
+                        <form name="form" action="{% url 'blog:message_block' %}" method="post">
+                            <ul class="textinfo">
+                                <div style="text-align: center" >
+                                    <div>
+                                        {{ message.media}}
+                                        {{ message.as_table }}
+{#                                        <textarea name="LMessage"  placeholder="此处填写留言:" style="width: 470px;height: 400px;background: #3D3D3D"></textarea>#}
+                                    </div>
+                                    <p style="margin-top: auto">{{ success }}</p>
+                                </div>
+                            </ul>
+                        </form>
+                        <ul class="details" style="text-align: center">
+                            <li>点击此处<a href='javascript:document.form.submit();' style="color: #FF6633">提交</a>您的留言,开启我们的交流与合作</li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+
+{% endblock %}

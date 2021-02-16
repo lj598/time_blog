@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block blog_list_title %}
+    <div class="clicks">
+            <h2>日期分类</h2>
+                <ul>
+                    {% for blog_date in blog_dates %}
+                        <li><a href="{% url 'blog:blog_with_date' blog_date.year blog_date.month %}">{{ blog_date|date:"Y-m"}}({{ blog_count }})</a></li>
+                    {% endfor %}
+                </ul>
+        </div>
+{% endblock %}

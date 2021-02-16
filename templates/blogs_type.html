@@ -1,0 +1,60 @@
+{% extends 'blogs_list.html' %}
+{% load static %}
+{% block contend %}
+{% load comments_tags %}
+{% load likes_tags %}
+    <p>一共有{{ page_of_blogs.paginator.count }}篇博客</p>
+                {% for blog in page_of_blogs.object_list %}
+                <li>
+                    <div class="row_box">
+                        <div class="ti"></div><!--三角形-->
+                        <div class="ci"></div><!--圆形-->
+                        <h2 class="title"> <a href="{% url 'blog:blog_detail' blog.pk%}">{{ blog.title }}</a></h2>
+                        <ul class="textinfo">
+                            <p>{{ blog.content|striptags|truncatechars:30 }}...<a href="{% url 'blog:blog_detail' blog.pk%}">点我查看全部</a></p>
+                        </ul>
+                        <ul class="details">
+                            <li class="likes">{% get_like_count blog %}</li>
+                            <li class="comments">{% get_comment_count blog %}</li>
+                            <li class="icon_time">{{ blog.created_time }}</li>
+                        </ul>
+                    </div>
+                </li>
+                {% empty %}
+                    <p>博主还没有发文哦，请耐心等待哈</p>
+                {% endfor %}
+            <div>
+                        <ul style="font-size: 16px">
+                            <li style="float: left">
+                                {% if page_of_blogs.has_previous %}
+                                   <a href="?page={{page_of_blogs.pervious_page_number}}" aria-label="Next">
+                                        <span aria-hidden="true">&laquo;&nbsp;</span>
+                                   </a>
+                                {% else %}
+                                    <span aria-hidden="true">&laquo;&nbsp;</span>
+                                {% endif %}
+                            </li>
+                            {#中间页码部分#}
+                            {% for page_num in page_of_blogs.paginator.page_range %}
+                                {% if page_num == page_of_blogs.number %}
+                                    <li style="float: left" class="active">{{ page_num }}&nbsp;</li>
+                                {% else %}
+                                    <li style="float: left" ><a href="?page={{ page_num }}">{{ page_num }}&nbsp;</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            <li style="float: left">
+                                {% if page_of_blogs.has_next %}
+                                   <a href="?page={{page_of_blogs.next_page_number}}" aria-label="Next">
+                                        <span aria-hidden="true">&nbsp;&raquo;</span>
+                                   </a>
+                                {% else %}
+                                    <span aria-hidden="true">&nbsp;&raquo;</span>
+                                {% endif %}
+{#                                <a href="?page={{ page_num }}" aria-label="Next">#}
+{#                                    <span aria-hidden="true">&nbsp;&raquo;</span>#}
+{#                                </a>#}
+                            </li>
+                        </ul>
+                </div>
+        </ul>
+{% endblock %}

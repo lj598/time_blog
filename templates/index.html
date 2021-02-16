@@ -1,0 +1,125 @@
+<!doctype html>
+{% load static %}
+{% load comments_tags %}
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="order by dede58.com/" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Male的博客</title>
+<link href="{% static 'css/style.css'%}" rel="stylesheet">
+<link href="{% static 'css/animation.css'%} " rel="stylesheet">
+<link href="{% static 'css/lrtk.css'%}" rel="stylesheet" />
+<script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{% static 'js/js.js'%}"></script>
+</head>
+
+
+<body>
+{% block script_extends %}
+{% endblock %}
+<header>
+	<nav id="nav">
+    	<ul>
+            <li><a href="{% url 'blog:blog_list' %}" target="_blank" title="个人博客">首页</a></li>
+            <li><a href="{% url 'blog:photo' %}" target="_blank" title="相册">照片墙</a></li>
+            <li><a href="#" target="_blank" title="说说">说说</a></li>
+            <li><a href="#" target="_blank" title="心情日志">心情日志</a></li>
+{#            <li><a href="#" target="_blank" title="文章">文章</a></li>#}
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'login_out' %}" target="_blank" title="点击退出登录">{{ user.profile.nickname }}</a></li>
+                <li><a href="{% url 'user_info' %}" target="_blank" title="个人信息">个人信息</a></li>
+            {% else %}
+                <li><a href="{% url 'blog:load_login' %}" target="_blank" title="注册/登录">注册/登录</a></li>
+            {% endif %}
+
+        </ul>
+         <script src="{% static 'js/silder.js'%}"></script><!--获取当前页导航 高亮显示标题-->
+    </nav>
+</header><!--导航栏-->
+
+<div id="mainbody">
+	<div class="info">
+        {% block map %}<!--图表框-->
+        {% endblock %}
+
+        {% block card %}<!--名片-->
+        {% endblock %}
+    </div>
+
+<!--info结束-->
+
+<!--博客的列表开始-->
+    <div class="blogs">
+        <ul class="bloglist">
+            {% block contend%}{% endblock %}
+        </ul>
+    <!--博客列表部分结束-->
+
+    <!--右半部分开始-->
+        <aside>
+            {% block search %}<!--搜索框-->
+            {% endblock %}
+
+            {% block type %}<!--博客列表框-->
+            {% endblock %}
+
+            {% block blog_date_list %}<!--日期分类框-->
+            {% endblock %}
+
+            {% block seven %}
+            {% endblock %}
+
+            {% block know %}
+            {% endblock %}
+
+{#            <div class="viny">#}
+{#                <dl>#}
+{#                    <h2>不如来首歌听听</h2>#}
+{#                    <dt class="art"><img src="{% static 'images/artwork.png'%}" alt="专辑"></dt>#}
+{#                    <dd class="icon_song"><span></span>南方姑娘</dd>#}
+{#                    <dd class="icon_artist"><span></span>歌手：赵雷</dd>#}
+{#                    <dd class="icon_album"><span></span>所属专辑：《赵小雷》</dd>#}
+{#                    <dd class="icon_like"><span></span><a href="#">喜欢</a></dd>#}
+{#                    <dd class="music"><audio src="{% static 'images/nf1.mp3'%}" controls loop></audio></dd>#}
+{#                </dl>#}
+{#            </div>#}
+        </aside>
+	</div>
+    <!--blogs结束-->
+</div>
+<!--mainbody结束-->
+<footer>
+    <div class="foot-mid">
+        <div class="links">
+        	<h2>友情链接</h2>
+            <ul>
+            	<li><a href="#">链接1</a></li>
+                <li><a href="#">链接2</a></li>
+            </ul>
+        </div>
+        <div class="visitors">
+        	<h2>最新评论</h2>
+            {% for new_comment in new_comments %}
+                <dl>
+{#            	<dt><img src="{% static 'images/s1.jpg'%}">头像</dt>#}
+            	<dd>{{ new_comment.user.get_nickname }}({{ new_comment.user.username }})<time>{{ new_comment.comment_time }}</time></dd>
+                <dd>在博客“<a href="{% url 'blog:blog_detail' new_comment.object_id%}" class="title">{{ new_comment.content_object.title }}</a>”中评论:</dd>
+                <dd class="remark">{{ new_comment.text|safe }}</dd>
+            </dl>
+            {% empty %}
+                <p>暂无最新评论</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div id="tbox">
+        <a id="togbook" href="{% url 'blog:message_block' %}"></a>
+        <a id="gotop" href="javascript:void(0)"></a> </div>
+
+    <div class="foot-bottom">{# 这边写页脚，写一些备案信息等 #}
+    	 <p>Copyright 2020 Design by <a href="#">Jeniffer</a></p>
+    </div>
+</footer>
+</body>
+</html>
